@@ -11,9 +11,9 @@ class NeuralNetwork:
         self.lr = learning_rate
 
 
-        self.W1 = np.random.randint(input_size, hidden_size) * 0.01
+        self.W1 = np.random.randn(input_size, hidden_size) * 0.01
         self.B1 = np.zeros((1, hidden_size))
-        self.W2 = np.random.randint(hidden_size, output_size ) * 0.01
+        self.W2 = np.random.randn(hidden_size, output_size ) * 0.01
         self.B2 = np.zeros((1, output_size))
 
     def sigmoid(self,z):
@@ -103,7 +103,7 @@ class NeuralNetwork:
         return loss
     
     def compute_accuracy(self, y_true, y_pred):
-        
+
         y_true_labels = np.argmax(y_true, axis=1)
         y_pred_labels = np.argmax(y_pred, axis=1)
         return np.mean(y_true_labels == y_pred_labels)
@@ -112,6 +112,3 @@ class NeuralNetwork:
         # Make the predictions using the input data
         output = self.forward(inputData)
         return (output > 0.5).astype(int)
-
-
-        
