@@ -102,6 +102,12 @@ class NeuralNetwork:
             
         return loss
     
+    def compute_accuracy(self, y_true, y_pred):
+        
+        y_true_labels = np.argmax(y_true, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+        return np.mean(y_true_labels == y_pred_labels)
+    
     def predict(self, inputData):
         # Make the predictions using the input data
         output = self.forward(inputData)
