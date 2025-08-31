@@ -3,8 +3,6 @@ from DatasetVisualisation import visualise_mnist_dataset
 from PreprocessData import preprocess_MNIST, show_preprocessing_effects
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-import tensorflow as ts
 from tensorflow import keras
 
 (X_train, y_train), (X_test, y_test) = keras.datasets.mnist.load_data() # get the MNIST dataset
