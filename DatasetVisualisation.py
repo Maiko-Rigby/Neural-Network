@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as ts
 from tensorflow import keras
 
-def visualise_mnist_dataset():
+def visualise_mnist_dataset(X_train, y_train):
 
     # display samples of every digit
 

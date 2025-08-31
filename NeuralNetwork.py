@@ -1,8 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-import tensorflow as ts
-from tensorflow import keras
 
 class NeuralNetwork:
     def __init__(self, learning_rate, input_size, hidden_size, output_size):
@@ -20,7 +16,7 @@ class NeuralNetwork:
         # Takes any number and squishes it into a value between 0 and 1
 
         z = np.clip(z, -500, 500) # Clipping the Z value prevents overflow
-        return 1 / (1 + np.exp(-1))
+        return 1 / (1 + np.exp(-z))
     
     def sigmoid_derivative(self,z):
         s = self.sigmoid(z)
@@ -59,20 +55,24 @@ class NeuralNetwork:
         # Calculate the gradients for the hidden layer
 
         dZ1 = np.dot(dZ2, self.W2.T) * self.sigmoid_derivative(self.Z1)
-        dW1 = (1/m) * np.dot(self.X.T, dZ2)
+        dW1 = (1/m) * np.dot(inputData.T, dZ1)
         db1 = (1/m) * np.sum(dZ1, axis=0, keepdims=True)
 
         # Update the weights and biases
         self.W2 -= self.lr * dW2
-        self.b2 -= self.lr * db2
+        self.B2 -= self.lr * db2
         self.W1 -= self.lr * dW1
-        self.b1 -= self.lr * db1
+        self.B1 -= self.lr * db1
 
-    def train(self, inputData, trueLabels, epochs = 1000):
+    def train(self, inputData, trueLabels, epochs = 1000, print_every=10):
         
         losses = []
+        accuracies = []
+
+        n_samples = inputData.shape[0]
 
         for epoch in range(epochs):
+
             # Perform a forward propagation
 
             output = self.forward(inputData)
@@ -82,15 +82,20 @@ class NeuralNetwork:
             loss = self.compute_loss(trueLabels, output)
             losses.append(loss)
 
+            # Calculate accuracy
+
+            accuracy = self.compute_accuracy(trueLabels, output)
+            accuracies.append(accuracy)
+
             # Perform a backwards propagation
 
             self.backward(inputData, trueLabels, output)
 
-            if epoch % 100 == 0:
-                print(f'Epoch {epoch}, Loss: {loss:.4f}')
+            if epoch % print_every == 0:
+                print(f'Epoch {epoch}, Loss: {loss:.4f}, Accuracy: {accuracy:.4f}')
 
         
-        return losses
+        return losses, accuracies
 
     def compute_loss(self, trueLabels, output):
         # Computing binary cross-entropy loss
@@ -98,7 +103,7 @@ class NeuralNetwork:
         m = trueLabels.shape[0]
 
         output = np.clip(output, 1e-7, 1-1e-7)
-        loss = -1/m * np.sum(trueLabels * np.log(output) + (1 - trueLabels) * np.log(1 - output))
+        loss = -1/m * np.sum(trueLabels * np.log(output))
             
         return loss
     
