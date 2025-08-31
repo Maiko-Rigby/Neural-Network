@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 
 class NeuralNetwork:
     def __init__(self, learning_rate, input_size, hidden_size, output_size):
@@ -64,35 +65,59 @@ class NeuralNetwork:
         self.W1 -= self.lr * dW1
         self.B1 -= self.lr * db1
 
-    def train(self, inputData, trueLabels, epochs = 1000, print_every=10):
+    def train(self, inputData, trueLabels, epochs = 200, print_every=10, batch_size=128):
         
         losses = []
         accuracies = []
 
         n_samples = inputData.shape[0]
+        n_batches = (n_samples + batch_size - 1) // batch_size
+        progress_bar = tqdm(total=epochs, desc="Training", unit=f"{print_every} epochs")
 
         for epoch in range(epochs):
 
-            # Perform a forward propagation
 
-            output = self.forward(inputData)
+            indices = np.arange(n_samples)
+            np.random.shuffle(indices)
+            inputData_shuffled = inputData[indices]
+            trueLabels_shuffled = trueLabels[indices]
 
-            # Calculate loss
+            epoch_loss = 0
+            epoch_accuracy = 0
 
-            loss = self.compute_loss(trueLabels, output)
+            for i in range(0, n_samples, batch_size):
+
+                x_batch = inputData_shuffled[i:i+batch_size]
+                y_batch = trueLabels_shuffled[i:i+batch_size]
+                # Perform a forward propagation
+
+                output = self.forward(x_batch)
+                # Calculate loss
+
+                # Compute loss and accuracy
+                batch_loss = self.compute_loss(y_batch, output)
+                batch_accuracy = self.compute_accuracy(y_batch, output)
+
+                epoch_loss += batch_loss * x_batch.shape[0]
+                epoch_accuracy += batch_accuracy * x_batch.shape[0]
+
+                # Perform a backwards propagation
+
+                self.backward(x_batch, y_batch, output)
+
+            loss = self.compute_loss(y_batch, output)
             losses.append(loss)
 
             # Calculate accuracy
 
-            accuracy = self.compute_accuracy(trueLabels, output)
+            accuracy = self.compute_accuracy(y_batch, output)
             accuracies.append(accuracy)
 
-            # Perform a backwards propagation
-
-            self.backward(inputData, trueLabels, output)
-
-            if epoch % print_every == 0:
-                print(f'Epoch {epoch}, Loss: {loss:.4f}, Accuracy: {accuracy:.4f}')
+            # Update tqdm every epoch
+            
+            if (epoch + 1) % print_every == 0 or epoch == epochs - 1:
+                progress_bar.update(print_every)
+                progress_bar.set_postfix(loss=f"{epoch_loss:.4f}", acc=f"{epoch_accuracy:.4f}")
 
         
         return losses, accuracies
