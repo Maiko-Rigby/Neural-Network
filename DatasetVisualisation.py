@@ -14,8 +14,6 @@ def visualise_mnist_dataset(X_train, y_train):
         for i, idx in enumerate(digit_indices):
             plt.subplot(10,8, digit * 8 + i + 1)
             plt.imshow(X_train[idx], cmap='gray', interpolation='nearest')
-            if i == 0:
-                plt.ylabel(digit, fontsize=12, fontweight='bold')
             plt.xticks([])
             plt.yticks([])
     plt.suptitle('MNIST Dataset : Examples of each digit (0-9)', fontsize=12, fontweight='bold')

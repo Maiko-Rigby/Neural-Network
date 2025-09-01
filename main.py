@@ -34,7 +34,7 @@ print(f"Hidden layer: 128 neurons (sigmoid activation)")
 print(f"Output layer: 10 neurons (softmax activation for digits 0-9)")
 print(f"Total parameters: {784*128 + 128 + 128*10 + 10:,}")
 
-losses, accuracies = nn_mnist.train(X_train_proc, y_train_onehot, epochs=500, print_every=40, batch_size=128)
+losses, accuracies = nn_mnist.train(X_train_proc, y_train_onehot, epochs=50, print_every=10, batch_size=128)
 
 print(f"\nEvaluating on test set...")
 test_predictions = nn_mnist.forward(X_test_proc)
@@ -57,7 +57,7 @@ model_mnist.summary()
 
 print("\nTraining TensorFlow model...")
 history = model_mnist.fit(X_train_proc, y_train_onehot,
-                         epochs=20,
+                         epochs=50,
                          batch_size=128,
                          validation_split=0.2,
                          verbose=1)
